@@ -489,7 +489,7 @@ def admin_results(request):
 
     results = results.order_by('-semester', 'student__username')
 
-    semesters = sorted(set(Result.objects.values_list('semester', flat=True).distinct()))
+    semesters = list(range(1, 13))
 
     return render(request, 'admin/results.html', {
         'results': results,
@@ -1039,40 +1039,49 @@ def teacher_upload_excel(request):
         course = get_object_or_404(Course, id=course_id)
         semester = int(semester)
 
-        wb = load_workbook(file)
-        ws = wb.active
+        try:
+            wb = load_workbook(file)
+            ws = wb.active
+            success_count = 0
+            
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row or not row[0]:
+                    continue
+                try:
+                    student = CustomUser.objects.get(id=row[0], role='student')
+                except:
+                    continue
 
-        for row in ws.iter_rows(min_row=2, values_only=True):
-            if not row or not row[0]:
-                continue
-            try:
-                student = CustomUser.objects.get(id=row[0], role='student')
-            except:
-                continue
+                try:
+                    quiz = float(str(row[2] or 0).strip())
+                    forum = float(str(row[3] or 0).strip())
+                    assignment = float(str(row[4] or 0).strip())
+                    midterm = float(str(row[5] or 0).strip())
+                    final = float(str(row[6] or 0).strip())
+                    total = quiz + forum + assignment + midterm + final
+                except (ValueError, TypeError):
+                    continue
 
-            quiz = float(row[2] or 0)
-            forum = float(row[3] or 0)
-            assignment = float(row[4] or 0)
-            midterm = float(row[5] or 0)
-            final = float(row[6] or 0)
-            total = quiz + forum + assignment + midterm + final
+                Result.objects.update_or_create(
+                    student=student,
+                    course=course,
+                    semester=semester,
+                    defaults={
+                        "quiz_marks": quiz,
+                        "forum_marks": forum,
+                        "assignment_marks": assignment,
+                        "midterm_marks": midterm,
+                        "final_marks": final,
+                        "marks": total,
+                    }
+                )
+                success_count += 1
 
-            Result.objects.update_or_create(
-                student=student,
-                course=course,
-                semester=semester,
-                defaults={
-                    "quiz_marks": quiz,
-                    "forum_marks": forum,
-                    "assignment_marks": assignment,
-                    "midterm_marks": midterm,
-                    "final_marks": final,
-                    "marks": total,
-                }
-            )
-
-        messages.success(request, "Excel uploaded successfully!")
-        return redirect("teacher_upload_excel")
+            messages.success(request, f"{success_count} student marks uploaded successfully!")
+            return redirect("teacher_upload_excel")
+        except Exception as e:
+            messages.error(request, f"Error processing file: {str(e)}")
+            return redirect("teacher_upload_excel")
 
     return render(request, "teacher/upload_excel.html", {
         "courses": courses,
@@ -1113,12 +1122,15 @@ def admin_upload_excel(request):
                 except:
                     continue
 
-                quiz = float(row[2] or 0)
-                forum = float(row[3] or 0)
-                assignment = float(row[4] or 0)
-                midterm = float(row[5] or 0)
-                final = float(row[6] or 0)
-                total = quiz + forum + assignment + midterm + final
+                try:
+                    quiz = float(str(row[2] or 0).strip())
+                    forum = float(str(row[3] or 0).strip())
+                    assignment = float(str(row[4] or 0).strip())
+                    midterm = float(str(row[5] or 0).strip())
+                    final = float(str(row[6] or 0).strip())
+                    total = quiz + forum + assignment + midterm + final
+                except (ValueError, TypeError):
+                    continue
 
                 Result.objects.update_or_create(
                     student=student,

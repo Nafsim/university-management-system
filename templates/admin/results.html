@@ -20,7 +20,7 @@
                     <option value="">All Semesters</option>
                     {% for sem in semesters %}
                     <option value="{{ sem }}" 
-                            {% if selected_semester == sem %}selected{% endif %}>
+                            {% if selected_semester == sem|stringformat:"s" %}selected{% endif %}>
                         Semester {{ sem }}
                     </option>
                     {% endfor %}
