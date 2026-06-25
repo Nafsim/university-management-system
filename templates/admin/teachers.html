@@ -1,0 +1,100 @@
+﻿{% extends 'admin/admin_base.html' %}
+{% block title %}Teachers Management | WUB Portal{% endblock %}
+
+{% block admin_content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h5 class="mb-0">👨‍🏫 Teacher Management</h5>
+
+        <a href="{% url 'admin_teacher_add' %}" class="btn btn-success btn-sm">
+            + Add New Teacher
+        </a>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th width="220">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for teacher in teachers %}
+
+                    <tr>
+                        <td>{{ teacher.id }}</td>
+
+                        <td>
+                            <strong>{{ teacher.username }}</strong>
+                            {% if teacher.full_name %}
+                                <br><small class="text-muted">{{ teacher.full_name }}</small>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ teacher.email }}</td>
+
+                        <td>
+                            {% if teacher.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'admin_teacher_details' teacher.id %}"
+                               class="btn btn-info btn-sm">
+                                View
+                            </a>
+
+                            <a href="{% url 'admin_teacher_edit' teacher.id %}"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <a href="{% url 'admin_teacher_delete' teacher.id %}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure you want to delete this teacher?');">
+                                Delete
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            No teachers found.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

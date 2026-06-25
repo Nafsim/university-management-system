@@ -1,0 +1,96 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Teacher Details{% endblock %}
+
+{% block admin_content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-primary text-white">
+            <h5>👨‍🏫 Teacher Profile</h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <!-- LEFT SIDE INFO -->
+                <div class="col-md-6">
+
+                    <p><strong>ID:</strong> {{ teacher.id }}</p>
+
+                    <p><strong>Username:</strong> {{ teacher.username }}</p>
+
+                    <p><strong>Full Name:</strong> {{ teacher.full_name }}</p>
+
+                    <p><strong>Email:</strong> {{ teacher.email }}</p>
+
+                    <p><strong>Phone:</strong> {{ teacher.phone }}</p>
+
+                </div>
+
+                <!-- RIGHT SIDE INFO -->
+                <div class="col-md-6">
+
+                    <p>
+                        <strong>Status:</strong>
+
+                        {% if teacher.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </p>
+
+                    <p><strong>Role:</strong> {{ teacher.role }}</p>
+
+                    <p><strong>Address:</strong> {{ teacher.address }}</p>
+
+                    <p>
+                        <strong>Joined At:</strong>
+                        {{ teacher.date_joined|date:"d M Y" }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <!-- COURSES SECTION -->
+            <h5>📚 Courses Teaching</h5>
+
+            {% if courses %}
+
+                <ul class="list-group">
+
+                    {% for course in courses %}
+
+                        <li class="list-group-item">
+                            <strong>{{ course.course_code }}</strong> - {{ course.course_title }}
+                        </li>
+
+                    {% endfor %}
+
+                </ul>
+
+            {% else %}
+
+                <p class="text-muted">No courses assigned yet.</p>
+
+            {% endif %}
+
+            <hr>
+
+            <a href="{% url 'admin_teachers' %}" class="btn btn-secondary">
+                ← Back to Teachers
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Notice Form{% endblock %}
+
+{% block admin_content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header bg-primary text-white">
+        <h5>📢 Notice Form</h5>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label>Title</label>
+                <input type="text" name="title"
+                       value="{{ notice.title|default:'' }}"
+                       class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Message</label>
+                <textarea name="message"
+                          class="form-control"
+                          rows="5"
+                          required>{{ notice.message|default:'' }}</textarea>
+            </div>
+
+            <button class="btn btn-success">Save</button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

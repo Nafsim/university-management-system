@@ -1,0 +1,41 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Notices{% endblock %}
+
+{% block admin_content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h5>📢 Notices</h5>
+    <a href="{% url 'admin_notice_add' %}" class="btn btn-success btn-sm">+ Add Notice</a>
+</div>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th width="200">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for notice in notices %}
+        <tr>
+            <td>{{ notice.title }}</td>
+            <td>{{ notice.created_at }}</td>
+            <td>
+                <a href="{% url 'admin_notice_edit' notice.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'admin_notice_delete' notice.id %}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('Delete this notice?')">
+                    Delete
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center">No notices found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends 'teacher/teacher_base.html' %}
+
+
+
+{% block title %}Student Details | WUB Portal{% endblock %}
+
+
+
+{% block teacher_content %}
+
+
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h3 class="mb-1">
+
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-mortarboard-fill me-2" viewBox="0 0 16 16"><path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.73l.761-.304a.5.5 0 0 0 .024-.917z"/><path d="M4.176 9.032a.5.5 0 0 0-.656.327 7 7 0 0 0-.294 2.053c0 .878.077 1.637.284 2.217.22.617.586 1.018 1.13 1.018.544 0 .91-.4 1.13-1.018.207-.58.284-1.339.284-2.217a7 7 0 0 0-.294-2.053.5.5 0 0 0-.656-.327"/></svg>Student Details
+
+        </h3>
+
+        <p class="text-muted mb-0">Academic and personal information</p>
+
+    </div> 
+
+    <a href="{% url 'teacher_students' %}" class="btn btn-primary btn-sm">
+
+    ← Back
+
+</a>
+
+</div>
+
+
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-primary text-white">
+
+    <strong>Student Information</strong>
+
+</div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3"><label class="text-muted">Student ID</label><h6>{{ student.id }}</h6></div>
+
+            <div class="col-md-6 mb-3"><label class="text-muted">Username</label><h6>{{ student.username }}</h6></div>
+
+            <div class="col-md-6 mb-3"><label class="text-muted">Email</label><h6>{{ student.email }}</h6></div>
+
+            <div class="col-md-6 mb-3"><label class="text-muted">Role</label><h6>Student</h6></div>
+
+            <div class="col-md-6 mb-3"><label class="text-muted">Semester</label><h6>{% if profile %}Semester {{ profile.semester }}{% else %}-{% endif %}</h6></div>
+
+            <div class="col-md-6 mb-3"><label class="text-muted">Status</label><h6>Active</h6></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-info text-white"><strong>Enrolled Courses</strong></div>
+
+    <div class="card-body">
+
+        {% if enrolled_courses %}
+
+            <table class="table table-sm table-bordered">
+
+                <thead class="table-light">
+
+                    <tr><th>Semester</th><th>Course Code</th><th>Course Title</th><th>Credits</th></tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for enrollment in enrolled_courses %}
+
+                    <tr>
+
+                        <td>Semester {{ enrollment.semester }}</td>
+
+                        <td>{{ enrollment.course.course_code }}</td>
+
+                        <td>{{ enrollment.course.course_title }}</td>
+
+                        <td>{{ enrollment.course.credit|default:"3.0" }}</td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        {% else %}
+
+            <p class="text-muted mb-0">No courses enrolled.</p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+<div class="card shadow-sm mb-4">
+
+    <div class="card-header bg-success text-white"><strong>Results</strong></div>
+
+    <div class="card-body">
+
+        {% if results %}
+
+            <table class="table table-sm table-striped">
+
+                <thead class="table-light">
+
+                    <tr><th>Semester</th><th>Course</th><th>Marks</th><th>Grade</th><th>GPA</th></tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for result in results %}
+
+                    <tr>
+
+                        <td>Semester {{ result.semester }}</td>
+
+                        <td>{{ result.course.course_title }}</td>
+
+                        <td>{{ result.marks }}</td>
+
+                        <td>{{ result.grade }}</td>
+
+                        <td>{{ result.gpa }}</td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        {% else %}
+
+            <p class="text-muted mb-0">No results recorded yet.</p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+{% endblock %}
+
+

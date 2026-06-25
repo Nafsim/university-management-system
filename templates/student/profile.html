@@ -1,0 +1,83 @@
+{% extends 'student/student_base.html' %}
+{% block title %}My Profile | WUB Portal{% endblock %}
+
+{% block student_content %}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5>👤 My Profile</h5>
+    </div>
+
+
+<div class="card-body">
+
+    <div class="text-center mb-4">
+
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}"
+                 class="rounded-circle border shadow"
+                 width="150"
+                 height="150"
+                 style="object-fit: cover;">
+        {% else %}
+            <img src="https://via.placeholder.com/150"
+                 class="rounded-circle border shadow"
+                 width="150"
+                 height="150">
+        {% endif %}
+
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text"
+                   class="form-control"
+                   value="{{ user.get_full_name|default:user.username }}"
+                   disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email"
+                   class="form-control"
+                   value="{{ user.email }}"
+                   disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Profile Picture</label>
+            <input type="file"
+                   name="profile_picture"
+                   class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <input type="text"
+                   name="phone"
+                   class="form-control"
+                   value="{{ user.phone|default:'' }}">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Address</label>
+            <textarea name="address"
+                      class="form-control"
+                      rows="3">{{ user.address|default:'' }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Update Profile
+        </button>
+
+    </form>
+
+</div>
+
+
+</div>
+
+{% endblock %}

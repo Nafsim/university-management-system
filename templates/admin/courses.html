@@ -1,0 +1,158 @@
+﻿{% extends 'admin/admin_base.html' %}
+{% block title %}Courses Management | WUB Portal{% endblock %}
+
+{% block admin_content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-book-fill me-2" viewBox="0 0 16 16"><path d="M8 1.783C7.015.778 5.578 0 3.75 0 2.186 0 .823.774 0 2.055v11.79C0 14.887 1.309 16 3.75 16c2.44 0 3.8-.778 4.25-1.783C8.4 15.222 9.76 16 12.25 16c2.44 0 3.75-1.113 3.75-2.155V2.055C16 .774 14.636 0 13 0c-1.828 0-3.265.778-4.25 1.783"/></svg>Course Management
+        </h5>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_course_add' %}"
+               class="btn btn-success btn-sm">
+                + Add New Course
+            </a>
+            <a href="{% url 'assign_course' %}" class="btn btn-primary btn-sm">
+                Assign Course to Teacher
+            </a>
+            
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <form method="get" class="mb-3">
+            <div class="input-group">
+                <input type="text"
+                       name="search"
+                       id="searchInput"
+                       value="{{ search_query }}"
+                       class="form-control"
+                       placeholder="Search by Course Code or Title...">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover table-bordered align-middle"
+                   id="coursesTable">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Title</th>
+                        <th>Credit</th>
+                        <th width="180">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for course in courses %}
+                    <tr>
+
+                        <td>
+                            <strong>{{ course.course_code }}</strong>
+                        </td>
+
+                        <td>
+                            {{ course.course_title }}
+                        </td>
+
+                        <td>
+                            {{ course.credit|default:"3.0" }}
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'admin_course_edit' course.id %}"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                           <a href="{% url 'admin_course_delete' course.id %}"
+   class="btn btn-danger btn-sm"
+   onclick="return confirm('Are you sure you want to delete this course?');">
+    Delete
+</a> 
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4"
+                            class="text-center text-muted py-4">
+                            No courses found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+function confirmDelete(id){
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'This course will be deleted permanently!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, Delete'
+    }).then((result)=>{
+
+        if(result.isConfirmed){
+
+            window.location.href =
+            "{% url 'admin_course_delete' 0 %}"
+            .replace('0', id);
+
+        }
+
+    });
+
+}
+
+document.getElementById('searchInput')
+.addEventListener('keyup', function(){
+
+    let filter = this.value.toUpperCase();
+
+    let rows =
+    document.querySelectorAll("#coursesTable tbody tr");
+
+    rows.forEach(row => {
+
+        let text =
+        row.textContent.toUpperCase();
+
+        row.style.display =
+        text.indexOf(filter) > -1 ? "" : "none";
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

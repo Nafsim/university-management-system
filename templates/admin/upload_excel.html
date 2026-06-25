@@ -1,0 +1,107 @@
+{% extends 'admin/admin_base.html' %}   <!-- Make sure this matches your actual base template -->
+
+{% block title %}
+Admin Excel Upload | WUB Portal
+{% endblock %}
+
+{% block admin_content %}
+
+<div class="card shadow-sm">
+
+    <!-- HEADER -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">📊 Admin Excel Upload</h5>
+
+        <div>
+            <a href="{% url 'download_excel_template' %}" class="btn btn-success btn-sm">
+                📥 Download Template
+            </a>
+
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-sm">
+                ← Back Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <form method="POST" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+
+            <!-- Semester Selection -->
+            <div class="mb-3">
+                <label class="form-label">Semester</label>
+                <select name="semester" id="semesterSelect" class="form-control" required>
+                    <option value="">-- Select Semester --</option>
+                    
+                    {% for s in semesters %}   <!-- Fixed: using 'semesters' list from view -->
+                    <option value="{{ s }}" {% if selected_semester == s|stringformat:"s" %}selected{% endif %}>
+                        Semester {{ s }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Course Selection (Filtered by Semester) -->
+            <div class="mb-3">
+                <label class="form-label">Course</label>
+                <select name="course" id="courseSelect" class="form-control" required>
+                    <option value="">-- Select Semester First --</option>
+                    {% for c in courses %}
+                    <option value="{{ c.id }}" data-semester="{{ c.semester }}">
+                        {{ c.course_code }} - {{ c.course_title }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Excel File -->
+            <div class="mb-3">
+                <label class="form-label">Excel File (.xlsx)</label>
+                <input type="file"
+                       name="excel_file"
+                       class="form-control"
+                       accept=".xlsx"
+                       required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Upload Marks
+            </button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const semesterSelect = document.getElementById('semesterSelect');
+    const courseSelect = document.getElementById('courseSelect');
+
+    function filterCourses() {
+        const selectedSemester = semesterSelect.value;
+        courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
+
+        if (!selectedSemester) return;
+
+        const allOptions = document.querySelectorAll('#courseSelect option[data-semester]');
+        
+        allOptions.forEach(option => {
+            if (option.getAttribute('data-semester') == selectedSemester) {
+                courseSelect.appendChild(option.cloneNode(true));
+            }
+        });
+    }
+
+    semesterSelect.addEventListener('change', filterCourses);
+
+    // Run filter if semester is pre-selected
+    if (semesterSelect.value) {
+        filterCourses();
+    }
+});
+</script>
+{% endblock %}

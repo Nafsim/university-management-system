@@ -1,0 +1,181 @@
+{% extends 'teacher/teacher_base.html' %}
+{% block title %}Upload Marks | WUB Portal{% endblock %}
+
+{% block teacher_content %}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square me-2" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/></svg>Upload Student Marks
+        </h5>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-info">
+            <strong>Manual Upload:</strong> Select the course and semester to upload or update marks.
+        </div>
+
+        <!-- Selection Form (GET) -->
+        <form method="GET" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label fw-bold">Course</label>
+                    <select name="course" class="form-select" onchange="this.form.submit()">
+                        <option value="">-- Select Course --</option>
+                        {% for course in courses %}
+                        <option value="{{ course.id }}" 
+                                {% if selected_course.id == course.id %}selected{% endif %}>
+                            {{ course.course_code }} - {{ course.course_title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Semester</label>
+                    <select name="semester" class="form-select" onchange="this.form.submit()">
+                        {% for sem in semesters %}
+                        <option value="{{ sem }}" 
+                                {% if selected_semester == sem %}selected{% endif %}>
+                            Semester {{ sem }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        {% if selected_course %}
+        <!-- Submission Form (POST) -->
+        <form method="POST">
+            {% csrf_token %}
+            <!-- Hidden inputs to submit course and semester in the POST body -->
+            <input type="hidden" name="course" value="{{ selected_course.id }}">
+            <input type="hidden" name="semester" value="{{ selected_semester }}">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th style="width: 100px;">Quiz</th>
+                            <th style="width: 100px;">Forum</th>
+                            <th style="width: 100px;">Assignment</th>
+                            <th style="width: 100px;">Midterm</th>
+                            <th style="width: 100px;">Final</th>
+                            <th style="width: 100px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr class="student-row" data-student-id="{{ student.id }}">
+                            <td class="text-center">{{ student.id }}</td>
+                            <td><strong>{{ student.username }}</strong></td>
+                            <td>
+                                <input type="number" step="0.01" min="0" max="100" 
+                                       class="form-control form-control-sm mark-input quiz-input" 
+                                       name="quiz_{{ student.id }}" 
+                                       value="{{ student.existing_quiz|default:'0' }}">
+                            </td>
+                            <td>
+                                <input type="number" step="0.01" min="0" max="100" 
+                                       class="form-control form-control-sm mark-input forum-input" 
+                                       name="forum_{{ student.id }}" 
+                                       value="{{ student.existing_forum|default:'0' }}">
+                            </td>
+                            <td>
+                                <input type="number" step="0.01" min="0" max="100" 
+                                       class="form-control form-control-sm mark-input assignment-input" 
+                                       name="assignment_{{ student.id }}" 
+                                       value="{{ student.existing_assignment|default:'0' }}">
+                            </td>
+                            <td>
+                                <input type="number" step="0.01" min="0" max="100" 
+                                       class="form-control form-control-sm mark-input midterm-input" 
+                                       name="midterm_{{ student.id }}" 
+                                       value="{{ student.existing_midterm|default:'0' }}">
+                            </td>
+                            <td>
+                                <input type="number" step="0.01" min="0" max="100" 
+                                       class="form-control form-control-sm mark-input final-input" 
+                                       name="final_{{ student.id }}" 
+                                       value="{{ student.existing_final|default:'0' }}">
+                            </td>
+                            <td class="text-center fw-bold total-cell" id="total_{{ student.id }}">
+                                {{ student.existing_total|default:'0.00' }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">No students found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success px-5 btn-lg">Save All Marks</button>
+                <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+        {% else %}
+        <div class="alert alert-warning text-center mt-3">
+            Please select a course to start entering marks.
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- ====================== EXCEL UPLOAD CARD ====================== -->
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-bar-chart-fill me-2" viewBox="0 0 16 16"><path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/></svg>Excel Upload System
+        </h5>
+    </div>
+
+    <div class="card-body">
+        <p class="mb-3">
+            Alternatively, upload or update student marks using Excel file for your courses.
+        </p>
+
+        <a href="{% url 'teacher_upload_excel' %}" class="btn btn-success me-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload me-1" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/></svg>Upload Excel
+        </a>
+
+        <a href="{% url 'download_excel_template' %}" class="btn btn-outline-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-1" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/></svg>Download Template
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const rows = document.querySelectorAll('.student-row');
+
+    function calculateRowTotal(row) {
+        const quiz = parseFloat(row.querySelector('.quiz-input').value) || 0;
+        const forum = parseFloat(row.querySelector('.forum-input').value) || 0;
+        const assignment = parseFloat(row.querySelector('.assignment-input').value) || 0;
+        const midterm = parseFloat(row.querySelector('.midterm-input').value) || 0;
+        const final = parseFloat(row.querySelector('.final-input').value) || 0;
+        
+        const total = quiz + forum + assignment + midterm + final;
+        row.querySelector('.total-cell').textContent = total.toFixed(2);
+    }
+
+    rows.forEach(row => {
+        // Calculate initial total
+        calculateRowTotal(row);
+
+        // Add event listener to each input in the row
+        row.querySelectorAll('.mark-input').forEach(input => {
+            input.addEventListener('input', () => calculateRowTotal(row));
+        });
+    });
+});
+</script>
+
+{% endblock %}

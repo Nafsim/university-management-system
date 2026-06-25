@@ -1,0 +1,186 @@
+{% extends 'student/student_base.html' %}
+{% block title %}My Results | WUB Portal{% endblock %}
+
+{% block student_content %}
+
+<div class="card shadow-sm mb-4">
+
+
+<div class="card-header d-flex justify-content-between align-items-center">
+
+    <h5 class="mb-0">📊 My Academic Results</h5>
+
+    <form method="get">
+        <select name="semester"
+                class="form-select"
+                onchange="this.form.submit()">
+
+            <option value="current"
+                {% if selected_semester == 'current' %}selected{% endif %}>
+                Current Semester ({{ current_semester }})
+            </option>
+
+            <option value="all"
+                {% if selected_semester == 'all' %}selected{% endif %}>
+                All Semesters
+            </option>
+
+            {% for sem in semesters %}
+            <option value="{{ sem }}"
+                {% if selected_semester == sem|stringformat:"s" %}
+                selected
+                {% endif %}>
+                Semester {{ sem }}
+            </option>
+            {% endfor %}
+
+        </select>
+    </form>
+
+</div>
+
+<div class="card-body">
+
+    <!-- CGPA -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body text-center">
+                    <h5 class="mb-1">Overall CGPA</h5>
+                    <h2 class="mb-0">{{ cgpa|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CURRENT / SELECTED SEMESTER -->
+    <h5 class="mt-3 mb-3">
+        {% if selected_semester == 'current' %}
+            Semester {{ current_semester }}
+        {% elif selected_semester == 'all' %}
+            All Semesters
+        {% else %}
+            Semester {{ selected_semester }}
+        {% endif %}
+    </h5>
+
+    <div class="table-responsive mb-5">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Course Code</th>
+                    <th>Course Title</th>
+                    <th>Quiz</th>
+                    <th>Forum</th>
+                    <th>Assignment</th>
+                    <th>Midterm</th>
+                    <th>Final</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                    <th>GPA</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for r in current_results %}
+                <tr>
+                    <td><strong>{{ r.course.course_code }}</strong></td>
+                    <td>{{ r.course.title }}</td>
+                    <td>{{ r.quiz_marks|floatformat:2 }}</td>
+                    <td>{{ r.forum_marks|floatformat:2 }}</td>
+                    <td>{{ r.assignment_marks|floatformat:2 }}</td>
+                    <td>{{ r.midterm_marks|floatformat:2 }}</td>
+                    <td>{{ r.final_marks|floatformat:2 }}</td>
+                    <td><strong>{{ r.marks }}</strong></td>
+
+                    <td>
+                        <span class="badge bg-{% if r.grade == 'F' %}danger{% else %}success{% endif %}">
+                            {{ r.grade }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <strong>{{ r.gpa|floatformat:2 }}</strong>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center text-muted py-4">
+                        No results found.
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PREVIOUS SEMESTERS (only when viewing current semester) -->
+    {% if selected_semester == 'current' and previous_results %}
+
+    <h5 class="mt-4 mb-3">📚 Previous Semesters</h5>
+
+    {% for sem, results in previous_results.items %}
+
+    <div class="mb-4">
+
+        <h6 class="text-primary">{{ sem }}</h6>
+
+        <div class="table-responsive">
+
+            <table class="table table-sm table-bordered table-hover">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Course</th>
+                        <th>Total</th>
+                        <th>Grade</th>
+                        <th>GPA</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for r in results %}
+                    <tr>
+                        <td>
+                            {{ r.course.course_code }}
+                            -
+                            {{ r.course.title }}
+                        </td>
+
+                        <td>{{ r.marks }}</td>
+
+                        <td>
+                            <span class="badge bg-{% if r.grade == 'F' %}danger{% else %}success{% endif %}">
+                                {{ r.grade }}
+                            </span>
+                        </td>
+
+                        <td>{{ r.gpa|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {% empty %}
+        <p class="text-muted">
+            No previous semester results found.
+        </p>
+    {% endfor %}
+
+    {% endif %}
+
+</div>
+
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Admin Panel | WUB Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+
+        <!-- LEFT SIDEBAR -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm sticky-top" style="top:20px;">
+                <!-- HEADER -->
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill me-2" viewBox="0 0 16 16"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.86"/></svg>Admin Menu
+                    </h5>
+                </div>
+
+                <!-- MENU -->
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'admin_dashboard' %}" 
+                       class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-door-fill me-2" viewBox="0 0 16 16"><path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5V7a.5.5 0 0 0-.191-.392l-5.5-3.5a.5.5 0 0 0-.618 0l-5.5 3.5A.5.5 0 0 0 2 7v7.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5"/></svg>Dashboard
+                    </a>
+                    <a href="{% url 'admin_students' %}" 
+                       class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'admin_students' %}active{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mortarboard-fill me-2" viewBox="0 0 16 16"><path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.73l.761-.304a.5.5 0 0 0 .024-.917z"/><path d="M4.176 9.032a.5.5 0 0 0-.656.327 7 7 0 0 0-.294 2.053c0 .878.077 1.637.284 2.217.22.617.586 1.018 1.13 1.018.544 0 .91-.4 1.13-1.018.207-.58.284-1.339.284-2.217a7 7 0 0 0-.294-2.053.5.5 0 0 0-.656-.327"/></svg>Students
+                    </a>
+                    <a href="{% url 'admin_teachers' %}" 
+                       class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'admin_teachers' %}active{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-workspace me-2" viewBox="0 0 16 16"><path d="M4 16s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5.984-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/><path d="M2 1a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/></svg>Teachers
+                    </a>
+                    <a href="{% url 'admin_courses' %}" 
+                       class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'admin_courses' %}active{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book-fill me-2" viewBox="0 0 16 16"><path d="M8 1.783C7.015.778 5.578 0 3.75 0 2.186 0 .823.774 0 2.055v11.79C0 14.887 1.309 16 3.75 16c2.44 0 3.8-.778 4.25-1.783C8.4 15.222 9.76 16 12.25 16c2.44 0 3.75-1.113 3.75-2.155V2.055C16 .774 14.636 0 13 0c-1.828 0-3.265.778-4.25 1.783"/></svg>Courses
+                    </a>
+                    <a href="{% url 'admin_results' %}" 
+                       class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'admin_results' %}active{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bar-chart-fill me-2" viewBox="0 0 16 16"><path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/></svg>Results
+                    </a>
+                    <a href="{% url 'admin_payments' %}" 
+                       class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'admin_payments' %}active{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash-stack me-2" viewBox="0 0 16 16"><path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/><path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/></svg>Payments
+                    </a>
+                    <a href="{% url 'admin_notices' %}" 
+                       class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'admin_notices' %}active{% endif %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-megaphone-fill me-2" viewBox="0 0 16 16"><path d="M13 2.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0zm-1 .724c-2.067.95-4.539 1.481-7 1.656v6.237a25 25 0 0 1 7 1.656zm-8 2.25c-1.848 0-3.328.049-4.328.163-.497.057-.672.203-.672.483v2.859c0 .28.175.426.672.483 1 .114 2.48.163 4.328.163zM3 13H2a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1"/></svg>Notices
+                    </a>
+                    <a href="{% url 'logout' %}" 
+                       class="list-group-item list-group-item-action text-danger">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-open-fill me-2" viewBox="0 0 16 16"><path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-1 0V1H5V.5a.5.5 0 0 0-1 0V1h-.5A1.5 1.5 0 0 0 2 2.5V15zm4-7a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/></svg>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT CONTENT -->
+        <div class="col-lg-9">
+            {% block admin_content %}
+            {% endblock %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

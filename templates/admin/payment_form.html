@@ -1,0 +1,57 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}{% if payment %}Edit{% else %}Add{% endif %} Payment | WUB Portal{% endblock %}
+
+{% block admin_content %}
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            {% if payment %}Edit Payment{% else %}Add Payment{% endif %} — {{ student.username }}
+        </h5>
+        <a href="{% url 'admin_student_details' student.id %}" class="btn btn-secondary btn-sm">← Back</a>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Semester</label>
+                    <select name="semester" class="form-select" required>
+                        {% for sem in semesters %}
+                        <option value="{{ sem }}" {% if payment and payment.semester == sem %}selected{% endif %}>
+                            Semester {{ sem }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Amount (৳)</label>
+                    <input type="number" name="amount" class="form-control" step="0.01" min="0"
+                           value="{% if payment %}{{ payment.amount }}{% endif %}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select" required>
+                        <option value="Pending" {% if payment and payment.status == 'Pending' %}selected{% endif %}>Pending</option>
+                        <option value="Paid" {% if payment and payment.status == 'Paid' %}selected{% endif %}>Paid</option>
+                        <option value="Unpaid" {% if payment and payment.status == 'Unpaid' %}selected{% endif %}>Unpaid</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Invoice ID</label>
+                    <input type="text" name="invoice_id" class="form-control"
+                           value="{% if payment %}{{ payment.invoice_id|default:'' }}{% endif %}"
+                           placeholder="Optional">
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    {% if payment %}Update Payment{% else %}Add Payment{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

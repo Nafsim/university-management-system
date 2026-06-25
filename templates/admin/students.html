@@ -1,0 +1,200 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Students Management | WUB Portal{% endblock %}
+
+{% block admin_content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+        <h5 class="mb-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-mortarboard-fill me-2" viewBox="0 0 16 16"><path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.73l.761-.304a.5.5 0 0 0 .024-.917z"/><path d="M4.176 9.032a.5.5 0 0 0-.656.327 7 7 0 0 0-.294 2.053c0 .878.077 1.637.284 2.217.22.617.586 1.018 1.13 1.018.544 0 .91-.4 1.13-1.018.207-.58.284-1.339.284-2.217a7 7 0 0 0-.294-2.053.5.5 0 0 0-.656-.327"/></svg>Student Management
+        </h5>
+
+        <a href="{% url 'admin_student_add' %}" class="btn btn-success btn-sm">
+            + Add New Student
+        </a>
+
+    </div>
+
+    <div class="card-body">
+
+        <form method="get" class="row mb-3">
+
+            <div class="col-md-8 mb-2 mb-md-0">
+                <div class="input-group">
+                    <input type="text"
+                           name="search"
+                           id="searchInput"
+                           value="{{ search_query }}"
+                           class="form-control"
+                           placeholder="Search by Name, Email or ID...">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+
+                <select name="semester"
+                        class="form-select"
+                        onchange="this.form.submit()">
+
+                    <option value="">All Semesters</option>
+
+                    {% for sem in semesters %}
+                    <option value="{{ sem }}"
+                        {% if selected_semester == sem %}selected{% endif %}>
+                        Semester {{ sem }}
+                    </option>
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+        </form>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle"
+                   id="studentsTable">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th width="220">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for student in students %}
+
+                    <tr>
+                        <td>{{ student.id }}</td>
+
+                        <td>
+                            <strong>{{ student.username }}</strong>
+
+                            {% if student.full_name %}
+                            <br>
+                            <small class="text-muted">
+                                {{ student.full_name }}
+                            </small>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ student.email }}</td>
+
+                        <td>
+                            {% if student.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+
+                            <a href="{% url 'admin_student_details' student.id %}"
+                               class="btn btn-info btn-sm">
+                                View
+                            </a>
+
+                            <a href="{% url 'admin_student_edit' student.id %}"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                           <a href="{% url 'admin_student_delete' student.id %}"
+   class="btn btn-danger btn-sm"
+   onclick="return confirm('Are you sure you want to delete this student?');">
+    Delete
+</a>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            No students found.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+function confirmDelete(id) {
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'This student will be deleted permanently!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, Delete'
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            const deleteUrl = "{% url 'admin_student_delete' 0 %}".replace('0', id);
+
+            window.location.href = deleteUrl;
+        }
+
+    });
+
+}
+
+
+// SAFE SEARCH (no crash if element missing)
+const searchInput = document.getElementById('searchInput');
+
+if (searchInput) {
+
+    searchInput.addEventListener('keyup', function () {
+
+        let filter = this.value.toUpperCase();
+
+        let rows = document.querySelectorAll("#studentsTable tbody tr");
+
+        rows.forEach(row => {
+
+            let text = row.textContent.toUpperCase();
+
+            row.style.display = text.indexOf(filter) > -1 ? "" : "none";
+
+        });
+
+    });
+
+}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'student/student_base.html' %}
+{% block title %}Payments | WUB Portal{% endblock %}
+
+{% block student_content %}
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-cash-stack me-2" viewBox="0 0 16 16"><path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/><path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z"/></svg>Payments
+        </h5>
+        {% if has_payments %}
+        <select class="form-select w-25" id="semesterFilter" onchange="filterPayments()">
+            <option value="">All Semesters</option>
+            {% for sem in semesters %}
+            <option value="{{ sem }}">Semester {{ sem }}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if has_payments %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="paymentTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Semester</th>
+                        <th>Invoice ID</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr data-semester="{{ payment.semester }}">
+                        <td>Semester {{ payment.semester }}</td>
+                        <td>{{ payment.invoice_id|default:"-" }}</td>
+                        <td>৳ {{ payment.amount|floatformat:2 }}</td>
+                        <td>{{ payment.date|date:"d M, Y" }}</td>
+                        <td>
+                            <span class="badge {% if payment.status == 'Paid' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                {{ payment.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <h5>No Payment Records Found</h5>
+            <p>Payments will appear here once the admin records them.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function filterPayments() {
+    const selected = document.getElementById('semesterFilter').value;
+    document.querySelectorAll('#paymentTable tbody tr').forEach(row => {
+        const sem = row.getAttribute('data-semester');
+        row.style.display = (!selected || String(selected) === String(sem)) ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}

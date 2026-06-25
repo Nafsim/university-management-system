@@ -1,0 +1,77 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Assign Course | WUB Portal{% endblock %}
+
+{% block admin_content %}
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <!-- CARD -->
+            <div class="card shadow-sm">
+
+                <!-- HEADER -->
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">📚 Assign Course to Teacher</h5>
+                </div>
+
+                <!-- BODY -->
+                <div class="card-body">
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <!-- TEACHER -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Select Teacher</label>
+                            <select name="teacher" class="form-control" required>
+                                <option value="">-- Choose Teacher --</option>
+                                {% for t in teachers %}
+                                    <option value="{{ t.id }}">
+                                        {{ t.username }} ({{ t.email }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- COURSE -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Select Course</label>
+                            <select name="course" class="form-control" required>
+                                <option value="">-- Choose Course --</option>
+                                {% for c in courses %}
+                                    <option value="{{ c.id }}">
+                                        {{ c.course_code }} - {{ c.course_title }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- BUTTON -->
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a href="{% url 'admin_courses' %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+
+                            <button type="submit" class="btn btn-primary">
+                                Assign Course
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Upload Marks | WUB Portal{% endblock %}
+
+{% block admin_content %}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">📝 Upload Student Marks</h5>
+    </div>
+
+    <div class="card-body">
+        <div class="alert alert-info">
+            <strong>Note:</strong> This page uses the same system as Teacher's Upload Marks. 
+            You can upload marks for any course and semester.
+        </div>
+
+        <form method="GET" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Course</label>
+                    <select name="course" class="form-select" onchange="this.form.submit()">
+                        {% for course in courses %}
+                        <option value="{{ course.id }}" 
+                                {% if selected_course == course %}selected{% endif %}>
+                            {{ course.course_code }} - {{ course.course_title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Semester</label>
+                    <select name="semester" class="form-select" onchange="this.form.submit()">
+                        {% for sem in semesters %}
+                        <option value="{{ sem }}" 
+                                {% if selected_semester == sem %}selected{% endif %}>
+                            Semester {{ sem }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        {% if selected_course %}
+        <form method="POST">
+            {% csrf_token %}
+            <!-- Hidden inputs to submit course and semester in the POST body -->
+            <input type="hidden" name="course" value="{{ selected_course.id }}">
+            <input type="hidden" name="semester" value="{{ selected_semester }}">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Quiz</th>
+                            <th>Forum</th>
+                            <th>Assignment</th>
+                            <th>Midterm</th>
+                            <th>Final</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr class="student-row" data-student-id="{{ student.id }}">
+                            <td>{{ student.id }}</td>
+                            <td><strong>{{ student.username }}</strong></td>
+                            <td><input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm mark-input quiz-input" 
+                                name="quiz_{{ student.id }}" value="{{ student.existing_quiz|default:'0' }}" style="width:80px"></td>
+                            <td><input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm mark-input forum-input" 
+                                name="forum_{{ student.id }}" value="{{ student.existing_forum|default:'0' }}" style="width:80px"></td>
+                            <td><input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm mark-input assignment-input" 
+                                name="assignment_{{ student.id }}" value="{{ student.existing_assignment|default:'0' }}" style="width:80px"></td>
+                            <td><input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm mark-input midterm-input" 
+                                name="midterm_{{ student.id }}" value="{{ student.existing_midterm|default:'0' }}" style="width:80px"></td>
+                            <td><input type="number" step="0.01" min="0" max="100" class="form-control form-control-sm mark-input final-input" 
+                                name="final_{{ student.id }}" value="{{ student.existing_final|default:'0' }}" style="width:80px"></td>
+                            <td class="text-center fw-bold total-cell" id="total_{{ student.id }}">{{ student.existing_total|default:'0.00' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success btn-lg px-5">Save All Marks</button>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const rows = document.querySelectorAll('.student-row');
+
+            function calculateRowTotal(row) {
+                const quiz = parseFloat(row.querySelector('.quiz-input').value) || 0;
+                const forum = parseFloat(row.querySelector('.forum-input').value) || 0;
+                const assignment = parseFloat(row.querySelector('.assignment-input').value) || 0;
+                const midterm = parseFloat(row.querySelector('.midterm-input').value) || 0;
+                const final = parseFloat(row.querySelector('.final-input').value) || 0;
+                
+                const total = quiz + forum + assignment + midterm + final;
+                row.querySelector('.total-cell').textContent = total.toFixed(2);
+            }
+
+            rows.forEach(row => {
+                calculateRowTotal(row);
+
+                row.querySelectorAll('.mark-input').forEach(input => {
+                    input.addEventListener('input', () => calculateRowTotal(row));
+                });
+            });
+        });
+        </script>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

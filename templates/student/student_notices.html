@@ -1,0 +1,59 @@
+{% extends 'student/student_base.html' %}
+
+{% block student_content %}
+
+<div class="card shadow-sm">
+
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">📢 University Notices</h4>
+    </div>
+
+    <div class="card-body">
+
+        {% if notices %}
+
+            {% for notice in notices %}
+
+                <div class="card mb-3 border-0 shadow-sm">
+
+                    <div class="card-body">
+
+                        <h5>{{ notice.title }}</h5>
+
+                        <small class="text-muted">
+                            {{ notice.created_at|date:"d M Y" }}
+                        </small>
+
+                        <hr>
+
+                        <p>
+                            {{ notice.message }}
+                        </p>
+
+                        {% if notice.file %}
+                        <a href="{{ notice.file.url }}"
+                           class="btn btn-sm btn-outline-primary"
+                           target="_blank">
+                            Download Attachment
+                        </a>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="alert alert-info">
+                No notices available.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
